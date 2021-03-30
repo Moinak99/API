@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -31,19 +32,29 @@ namespace BlogPostApi
 
         public async Task<List<BlogPost>> ReadAllAsync(DbDataReader reader)
         {
+            ArrayList arlists= new ArrayList();
+            IDictionary<string, string> vals;
             var posts = new List<BlogPost>();
             using (reader)
             {
+               
                 while (await reader.ReadAsync())
                 {
-                    var post = new BlogPost(Db)
+                    vals = new Dictionary<string, string>();
+                    for(int i =0; i< reader.FieldCount; i++)
                     {
-                        Id = reader.GetInt32(0),
-                        Title = reader.GetString(1),
-                        Content = reader.GetString(2),
-                    };
-                    posts.Add(post);
+                        var a = reader.GetName(i).ToString() + ":" + reader.GetValue(i).ToString();
+                        vals.Add(reader.GetName(i).ToString(), reader.GetValue(i).ToString());
+
+
+                    }
+
+                    arlists.Add(vals);
+                   
                 }
+
+                
+
             }
             return posts;
         }
